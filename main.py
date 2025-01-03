@@ -1,12 +1,20 @@
-import requests, json, os
-import openai
 
-openai.organization = os.environ['organizationID']
-openai.api_key = os.environ['openai']
-openai.Model.list()
+import os
+from openai import OpenAI
 
-prompt = "Who is the most handsome bald man?"
+try:
+    client = OpenAI(api_key=os.environ.get('openai'))
+    if not client.api_key:
+        raise ValueError("OpenAI API key not found in environment variables")
 
-response = openai.Completion.create(model="text-davinci-002", prompt=prompt, temperature=0, max_tokens=6)
+    prompt = "Who is the most handsome bald man?"
+    
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    
+    print(response.choices[0].message.content)
 
-print(response["choices"][0]["text"].strip())
+except Exception as e:
+    print(f"Error: {e}")
